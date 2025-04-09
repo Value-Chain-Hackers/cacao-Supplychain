@@ -1,0 +1,41 @@
+# Jekyll Configuration for GitHub Pages
+
+# Site settings
+title: Cacao Supply Chain
+description: Information about the cacao supply chain from bean to bar
+baseurl: "/cacao-Supplychain" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+
+# Build settings
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .gitignore
+  - README.md
+
+# Enable relative URLs for GitHub Pages
+relative_urls: true
+
+# Sass settings
+sass:
+  style: compressed
+
+# Collections
+collections:
+  - sections
+
+# Default layout
+defaults:
+  -
+    scope:
+      path: ""
+    values:
+      layout: "default"

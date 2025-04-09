@@ -1,73 +1,88 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scrolling for navigation links
-    const navLinks = document.querySelectorAll('nav a');
-    
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
+// Wait for the document to be fully loaded before initializing
+(function() {
+    // Function to initialize everything when the DOM is ready
+    function initializeAll() {
+        // Smooth scrolling for navigation links
+        const navLinks = document.querySelectorAll('nav a');
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                if (targetSection) {
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 70, // Offset for the sticky header
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Initialize the cacao production map
+        initCacaoMap();
+        
+        // Animate supply chain steps on scroll
+        const steps = document.querySelectorAll('.step');
+        
+        function checkScroll() {
+            steps.forEach(step => {
+                const stepTop = step.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (stepTop < windowHeight * 0.8) {
+                    step.classList.add('visible');
+                }
+            });
+        }
+        
+        // Initial check in case elements are already in view
+        checkScroll();
+        
+        // Check on scroll
+        window.addEventListener('scroll', checkScroll);
+        
+        // Back to top button
+        const backToTopBtn = document.createElement('button');
+        backToTopBtn.innerHTML = '↑';
+        backToTopBtn.classList.add('back-to-top');
+        document.body.appendChild(backToTopBtn);
+        
+        backToTopBtn.addEventListener('click', function() {
             window.scrollTo({
-                top: targetSection.offsetTop - 70, // Offset for the sticky header
+                top: 0,
                 behavior: 'smooth'
             });
         });
-    });
-
-    // Initialize the cacao production map
-    initCacaoMap();
-    
-    // Animate supply chain steps on scroll
-    const steps = document.querySelectorAll('.step');
-    
-    function checkScroll() {
-        steps.forEach(step => {
-            const stepTop = step.getBoundingClientRect().top;
-            const windowHeight = window.innerHeight;
-            
-            if (stepTop < windowHeight * 0.8) {
-                step.classList.add('visible');
+        
+        function toggleBackToTopButton() {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
             }
-        });
-    }
-    
-    // Initial check in case elements are already in view
-    checkScroll();
-    
-    // Check on scroll
-    window.addEventListener('scroll', checkScroll);
-    
-    // Back to top button
-    const backToTopBtn = document.createElement('button');
-    backToTopBtn.innerHTML = '↑';
-    backToTopBtn.classList.add('back-to-top');
-    document.body.appendChild(backToTopBtn);
-    
-    backToTopBtn.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
-    
-    function toggleBackToTopButton() {
-        if (window.scrollY > 300) {
-            backToTopBtn.classList.add('show');
-        } else {
-            backToTopBtn.classList.remove('show');
         }
+        
+        window.addEventListener('scroll', toggleBackToTopButton);
+        
+        // Chat Bot Functionality
+        initChatBot();
     }
-    
-    window.addEventListener('scroll', toggleBackToTopButton);
-    
-    // Chat Bot Functionality
-    initChatBot();
-});
+
+    // Check if the document is already loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeAll);
+    } else {
+        // Document already loaded, run initialization immediately
+        initializeAll();
+    }
+})();
 
 // Function to initialize the chat bot
 function initChatBot() {
+    // Get chat bot elements
     const chatBotBubble = document.getElementById('chatBotBubble');
     const chatBotPanel = document.getElementById('chatBotPanel');
     const chatBotClose = document.getElementById('chatBotClose');
@@ -75,9 +90,23 @@ function initChatBot() {
     const chatBotSend = document.getElementById('chatBotSend');
     const chatBotMessages = document.getElementById('chatBotMessages');
     
+    // Check if all elements exist
+    if (!chatBotBubble || !chatBotPanel || !chatBotClose || !chatBotInput || !chatBotSend || !chatBotMessages) {
+        console.error('Chat bot elements not found. Chat functionality will not be available.');
+        return;
+    }
+    
     // API configuration
     const API_URL = 'https://openwebui.valuechainhackers.xyz/api/chat/completions';
     const MODEL_ID = 'chocy';
+    
+    // Chat history to maintain context
+    let chatHistory = [
+        {
+            role: 'system',
+            content: 'You are a helpful assistant that provides information about the cacao supply chain.'
+        }
+    ];
     
     // Toggle chat panel when bubble is clicked
     chatBotBubble.addEventListener('click', function() {
@@ -92,8 +121,10 @@ function initChatBot() {
         chatBotPanel.classList.remove('active');
     });
     
-    // Send message when send button is clicked or Enter key is pressed
+    // Send message when send button is clicked
     chatBotSend.addEventListener('click', sendMessage);
+    
+    // Send message when Enter key is pressed in the input field
     chatBotInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             sendMessage();
@@ -107,6 +138,12 @@ function initChatBot() {
         
         // Add user message to chat
         addMessageToChat('user', message);
+        
+        // Add to chat history
+        chatHistory.push({
+            role: 'user',
+            content: message
+        });
         
         // Clear input
         chatBotInput.value = '';
@@ -166,7 +203,7 @@ function initChatBot() {
     }
     
     // Function to send message to API
-    async function sendMessageToAPI(message) {
+    function sendMessageToAPI(message) {
         try {
             // In a real implementation, you would need to obtain an API key
             // For demonstration purposes, we'll simulate a response
@@ -195,11 +232,18 @@ function initChatBot() {
                 
                 // Add bot response to chat
                 addMessageToChat('bot', response);
+                
+                // Add to chat history
+                chatHistory.push({
+                    role: 'assistant',
+                    content: response
+                });
+                
             }, 1500);
             
-            // In a real implementation, you would make an actual API call like this:
+            // In a real implementation with API key, you would make an actual API call like this:
             /*
-            const response = await fetch(API_URL, {
+            fetch(API_URL, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer YOUR_API_KEY`,
@@ -207,26 +251,42 @@ function initChatBot() {
                 },
                 body: JSON.stringify({
                     model: MODEL_ID,
-                    messages: [
-                        {
-                            role: 'user',
-                            content: message
-                        }
-                    ]
+                    messages: chatHistory
                 })
-            });
-            
-            const data = await response.json();
-            
-            // Remove typing indicator
-            removeTypingIndicator();
-            
-            // Add bot response to chat
-            if (data.choices && data.choices.length > 0) {
-                addMessageToChat('bot', data.choices[0].message.content);
-            } else {
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Add bot response to chat
+                if (data.choices && data.choices.length > 0) {
+                    const botResponse = data.choices[0].message.content;
+                    addMessageToChat('bot', botResponse);
+                    
+                    // Add to chat history
+                    chatHistory.push({
+                        role: 'assistant',
+                        content: botResponse
+                    });
+                } else {
+                    addMessageToChat('bot', 'Sorry, I encountered an error. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error sending message to API:', error);
+                
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Add error message to chat
                 addMessageToChat('bot', 'Sorry, I encountered an error. Please try again.');
-            }
+            });
             */
             
         } catch (error) {
