@@ -365,6 +365,200 @@ footer p {
     background-color: var(--secondary-color);
 }
 
+/* Chat Bot Styles */
+.chat-bot-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.chat-bot-bubble {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.chat-bot-bubble:hover {
+    transform: scale(1.1);
+    background-color: var(--secondary-color);
+}
+
+.chat-bot-icon {
+    font-size: 24px;
+    color: var(--white);
+}
+
+.chat-bot-panel {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 350px;
+    height: 500px;
+    background-color: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    display: none;
+}
+
+.chat-bot-panel.active {
+    display: flex;
+}
+
+.chat-bot-header {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-bot-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--white);
+}
+
+.chat-bot-close {
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.chat-bot-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.chat-bot-message {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+}
+
+.chat-bot-message.user {
+    align-self: flex-end;
+}
+
+.chat-bot-message.bot {
+    align-self: flex-start;
+}
+
+.chat-bot-message-content {
+    padding: 10px 15px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.chat-bot-message.user .chat-bot-message-content {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-bottom-right-radius: 4px;
+}
+
+.chat-bot-message.bot .chat-bot-message-content {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    border-bottom-left-radius: 4px;
+}
+
+.chat-bot-input-container {
+    padding: 15px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid var(--accent-color);
+}
+
+.chat-bot-input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid var(--accent-color);
+    border-radius: 20px;
+    font-size: 14px;
+    outline: none;
+}
+
+.chat-bot-input:focus {
+    border-color: var(--primary-color);
+}
+
+.chat-bot-send {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 20px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.chat-bot-send:hover {
+    background-color: var(--secondary-color);
+}
+
+.chat-bot-typing {
+    display: flex;
+    gap: 5px;
+    padding: 10px 15px;
+    background-color: var(--accent-color);
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    width: fit-content;
+    margin-top: 5px;
+}
+
+.chat-bot-typing-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--text-color);
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: typing-animation 1.4s infinite ease-in-out;
+}
+
+.chat-bot-typing-dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.chat-bot-typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.chat-bot-typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing-animation {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     header .container {
@@ -400,6 +594,12 @@ footer p {
     .chain-steps {
         grid-template-columns: 1fr;
     }
+    
+    .chat-bot-panel {
+        width: 300px;
+        height: 450px;
+        bottom: 70px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -418,5 +618,17 @@ footer p {
 
     .section h2 {
         font-size: 1.6rem;
+    }
+    
+    .chat-bot-container {
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .chat-bot-panel {
+        width: 280px;
+        height: 400px;
+        bottom: 70px;
+        right: 0;
     }
 }

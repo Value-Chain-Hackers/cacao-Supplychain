@@ -61,7 +61,185 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     window.addEventListener('scroll', toggleBackToTopButton);
+    
+    // Chat Bot Functionality
+    initChatBot();
 });
+
+// Function to initialize the chat bot
+function initChatBot() {
+    const chatBotBubble = document.getElementById('chatBotBubble');
+    const chatBotPanel = document.getElementById('chatBotPanel');
+    const chatBotClose = document.getElementById('chatBotClose');
+    const chatBotInput = document.getElementById('chatBotInput');
+    const chatBotSend = document.getElementById('chatBotSend');
+    const chatBotMessages = document.getElementById('chatBotMessages');
+    
+    // API configuration
+    const API_URL = 'https://openwebui.valuechainhackers.xyz/api/chat/completions';
+    const MODEL_ID = 'chocy';
+    
+    // Toggle chat panel when bubble is clicked
+    chatBotBubble.addEventListener('click', function() {
+        chatBotPanel.classList.toggle('active');
+        if (chatBotPanel.classList.contains('active')) {
+            chatBotInput.focus();
+        }
+    });
+    
+    // Close chat panel when close button is clicked
+    chatBotClose.addEventListener('click', function() {
+        chatBotPanel.classList.remove('active');
+    });
+    
+    // Send message when send button is clicked or Enter key is pressed
+    chatBotSend.addEventListener('click', sendMessage);
+    chatBotInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+    
+    // Function to send message
+    function sendMessage() {
+        const message = chatBotInput.value.trim();
+        if (message === '') return;
+        
+        // Add user message to chat
+        addMessageToChat('user', message);
+        
+        // Clear input
+        chatBotInput.value = '';
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        // Send message to API
+        sendMessageToAPI(message);
+    }
+    
+    // Function to add message to chat
+    function addMessageToChat(sender, content) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-bot-message', sender);
+        
+        const messageContent = document.createElement('div');
+        messageContent.classList.add('chat-bot-message-content');
+        messageContent.textContent = content;
+        
+        messageElement.appendChild(messageContent);
+        chatBotMessages.appendChild(messageElement);
+        
+        // Scroll to bottom
+        chatBotMessages.scrollTop = chatBotMessages.scrollHeight;
+    }
+    
+    // Function to show typing indicator
+    function showTypingIndicator() {
+        const typingElement = document.createElement('div');
+        typingElement.classList.add('chat-bot-message', 'bot', 'typing-indicator');
+        
+        const typingContent = document.createElement('div');
+        typingContent.classList.add('chat-bot-typing');
+        
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('chat-bot-typing-dot');
+            typingContent.appendChild(dot);
+        }
+        
+        typingElement.appendChild(typingContent);
+        chatBotMessages.appendChild(typingElement);
+        
+        // Scroll to bottom
+        chatBotMessages.scrollTop = chatBotMessages.scrollHeight;
+        
+        return typingElement;
+    }
+    
+    // Function to remove typing indicator
+    function removeTypingIndicator() {
+        const typingIndicator = chatBotMessages.querySelector('.typing-indicator');
+        if (typingIndicator) {
+            chatBotMessages.removeChild(typingIndicator);
+        }
+    }
+    
+    // Function to send message to API
+    async function sendMessageToAPI(message) {
+        try {
+            // In a real implementation, you would need to obtain an API key
+            // For demonstration purposes, we'll simulate a response
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Generate a response based on the message
+                let response;
+                
+                if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
+                    response = "Hello! I'm your Cacao Supply Chain Assistant. How can I help you today?";
+                } else if (message.toLowerCase().includes('cacao') || message.toLowerCase().includes('chocolate')) {
+                    response = "Cacao is the main ingredient in chocolate production. The cacao tree (Theobroma cacao) produces pods containing beans that are processed to make chocolate. About 70% of the world's cacao is grown in West Africa.";
+                } else if (message.toLowerCase().includes('supply chain')) {
+                    response = "The cacao supply chain involves several steps: farming, harvesting, fermentation, drying, trading, processing, manufacturing, and distribution. Each step is crucial for the quality of the final chocolate product.";
+                } else if (message.toLowerCase().includes('challenge') || message.toLowerCase().includes('problem')) {
+                    response = "The cacao industry faces several challenges including farmer poverty, child labor issues, deforestation, climate change impacts, price volatility, and an aging farmer population.";
+                } else if (message.toLowerCase().includes('innovation') || message.toLowerCase().includes('solution')) {
+                    response = "Innovations in the cacao industry include sustainability initiatives, certification programs, direct trade relationships, technology adoption for transparency, research into disease-resistant varieties, and agroforestry systems.";
+                } else {
+                    response = "I'm here to help with information about the cacao supply chain. Feel free to ask about cacao farming, processing, challenges, or innovations in the industry!";
+                }
+                
+                // Add bot response to chat
+                addMessageToChat('bot', response);
+            }, 1500);
+            
+            // In a real implementation, you would make an actual API call like this:
+            /*
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer YOUR_API_KEY`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: MODEL_ID,
+                    messages: [
+                        {
+                            role: 'user',
+                            content: message
+                        }
+                    ]
+                })
+            });
+            
+            const data = await response.json();
+            
+            // Remove typing indicator
+            removeTypingIndicator();
+            
+            // Add bot response to chat
+            if (data.choices && data.choices.length > 0) {
+                addMessageToChat('bot', data.choices[0].message.content);
+            } else {
+                addMessageToChat('bot', 'Sorry, I encountered an error. Please try again.');
+            }
+            */
+            
+        } catch (error) {
+            console.error('Error sending message to API:', error);
+            
+            // Remove typing indicator
+            removeTypingIndicator();
+            
+            // Add error message to chat
+            addMessageToChat('bot', 'Sorry, I encountered an error. Please try again.');
+        }
+    }
+}
 
 // Function to initialize the cacao production map
 function initCacaoMap() {
