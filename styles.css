@@ -161,17 +161,18 @@ nav ul li a:hover::after {
     min-width: 300px;
 }
 
-/* Image Placeholders */
+/* Image Placeholders and Emoji Icons */
 .image-placeholder {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.placeholder {
-    background-color: var(--secondary-color);
-    color: var(--white);
-    padding: 100px;
+.emoji-placeholder {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    padding: 40px;
     border-radius: 8px;
     text-align: center;
     width: 100%;
@@ -180,6 +181,23 @@ nav ul li a:hover::after {
     justify-content: center;
     align-items: center;
     font-weight: bold;
+    font-size: 5rem;
+    letter-spacing: 20px;
+}
+
+.caption {
+    margin-top: 10px;
+    font-style: italic;
+    color: var(--secondary-color);
+}
+
+.emoji-icon {
+    font-size: 4rem;
+    margin: 15px 0;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Supply Chain Steps */
@@ -207,12 +225,6 @@ nav ul li a:hover::after {
     color: var(--primary-color);
 }
 
-.step .placeholder {
-    height: 100px;
-    padding: 30px;
-    margin: 15px 0;
-    background-color: var(--primary-color);
-}
 
 /* Challenges Grid */
 .challenges-grid {
