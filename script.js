@@ -205,41 +205,47 @@ function initChatBot() {
     // Function to send message to API
     function sendMessageToAPI(message) {
         try {
-            // In a real implementation, you would need to obtain an API key
-            // For demonstration purposes, we'll simulate a response
-            
-            // Simulate API call delay
-            setTimeout(() => {
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    messages: chatHistory
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
                 // Remove typing indicator
                 removeTypingIndicator();
                 
-                // Generate a response based on the message
-                let response;
-                
-                if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
-                    response = "Hello! I'm your Cacao Supply Chain Assistant. How can I help you today?";
-                } else if (message.toLowerCase().includes('cacao') || message.toLowerCase().includes('chocolate')) {
-                    response = "Cacao is the main ingredient in chocolate production. The cacao tree (Theobroma cacao) produces pods containing beans that are processed to make chocolate. About 70% of the world's cacao is grown in West Africa.";
-                } else if (message.toLowerCase().includes('supply chain')) {
-                    response = "The cacao supply chain involves several steps: farming, harvesting, fermentation, drying, trading, processing, manufacturing, and distribution. Each step is crucial for the quality of the final chocolate product.";
-                } else if (message.toLowerCase().includes('challenge') || message.toLowerCase().includes('problem')) {
-                    response = "The cacao industry faces several challenges including farmer poverty, child labor issues, deforestation, climate change impacts, price volatility, and an aging farmer population.";
-                } else if (message.toLowerCase().includes('innovation') || message.toLowerCase().includes('solution')) {
-                    response = "Innovations in the cacao industry include sustainability initiatives, certification programs, direct trade relationships, technology adoption for transparency, research into disease-resistant varieties, and agroforestry systems.";
+                if (data.success && data.message) {
+                    // Add bot response to chat
+                    addMessageToChat('bot', data.message);
+                    
+                    // Add to chat history
+                    chatHistory.push({
+                        role: 'assistant',
+                        content: data.message
+                    });
                 } else {
-                    response = "I'm here to help with information about the cacao supply chain. Feel free to ask about cacao farming, processing, challenges, or innovations in the industry!";
+                    addMessageToChat('bot', 'Sorry, I encountered an error. Please try again.');
                 }
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
                 
-                // Add bot response to chat
-                addMessageToChat('bot', response);
+                // Remove typing indicator
+                removeTypingIndicator();
                 
-                // Add to chat history
-                chatHistory.push({
-                    role: 'assistant',
-                    content: response
-                });
-                
-            }, 1500);
+                // Add error message to chat
+                addMessageToChat('bot', 'Sorry, I encountered an error. Please try again.');
+            });
             
             // In a real implementation with API key, you would make an actual API call like this:
             /*
